@@ -23,14 +23,15 @@ export default function App() {
   }, [token]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const redirectParam = params.get("redirect");
-    if (redirectParam) {
-      const decoded = decodeURIComponent(redirectParam);
-      const target = decoded.startsWith("/") ? decoded : `/${decoded}`;
-      navigate(target, { replace: true });
-    }
-  }, [navigate]);
+    if (!redirectParam) return;
+
+    const decoded = decodeURIComponent(redirectParam);
+    const target = decoded.startsWith("/") ? decoded : `/${decoded}`;
+
+    navigate(target, { replace: true });
+  }, [location.search, navigate]);
 
   useEffect(() => {
     const savedToken = getStoredAccessToken();
