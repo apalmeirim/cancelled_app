@@ -1,4 +1,4 @@
-const CLIENT_ID = '772e0b43a507466c9073a9dee32a59b5';
+const CLIENT_ID = 'd0d4e197a37f49dca9d350e7a8d44e6d';
 const REDIRECT_URI = "https://apalmeirim.github.io/cancelled_app/dashboard";
 const SCOPES = [
   "playlist-read-private",
