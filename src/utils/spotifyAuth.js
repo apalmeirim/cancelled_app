@@ -1,4 +1,4 @@
-const CLIENT_ID = '07218c6f90be4c9aa05dda9c17a63f3a';
+const CLIENT_ID = '772e0b43a507466c9073a9dee32a59b5';
 const REDIRECT_URI = 'https://apalmeirim.github.io/cancelled_app/';
 const SCOPES = [
     "playlist-read-private",
@@ -15,6 +15,8 @@ export function getAuthUrl() {
         scope: SCOPES.join(' '),
         state: crypto.randomUUID(),
     });
+    console.log("Auth URL:", `https://accounts.spotify.com/authorize?${params.toString()}`);
+    alert(`Redirect URI sent to Spotify:\n${REDIRECT_URI}`);
     return `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
