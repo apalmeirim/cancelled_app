@@ -44,6 +44,8 @@ export default function App() {
     const code = params.get("code");
     if (!code) return;
 
+    console.log("[Auth] Exchanging Spotify code...");
+
     let cancelled = false;
 
     (async () => {
@@ -52,6 +54,8 @@ export default function App() {
       if (newToken) {
         setToken(newToken);
         navigate("/dashboard", { replace: true });
+      } else {
+        console.warn("[Auth] Token exchange returned no token");
       }
     })();
 

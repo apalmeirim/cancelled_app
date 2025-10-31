@@ -55,6 +55,10 @@ export async function handleRedirectCallback(code) {
   if (!code) return null;
 
   const codeVerifier = localStorage.getItem("spotify_code_verifier");
+  if (!codeVerifier) {
+    console.error("[SpotifyAuth] Missing code verifier. Cannot exchange code.");
+    return null;
+  }
 
   const body = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -70,7 +74,18 @@ export async function handleRedirectCallback(code) {
     body,
   });
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch (err) {
+    console.error("[SpotifyAuth] Failed to parse token response", err);
+    return null;
+  }
+
+  if (!response.ok) {
+    console.error("[SpotifyAuth] Token exchange failed", data);
+    return null;
+  }
 
   if (data.access_token) {
     localStorage.setItem("spotify_access_token", data.access_token);
