@@ -17,6 +17,12 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
+    // Debug signal for token presence
+    // eslint-disable-next-line no-console
+    console.log("[Auth]", token ? "Token detected" : "No token");
+  }, [token]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const redirectParam = params.get("redirect");
     if (redirectParam) {
