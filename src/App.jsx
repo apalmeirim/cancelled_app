@@ -44,8 +44,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const hasAuthCode = params.has("code");
+
     if (!token) {
-      if (location.pathname === "/dashboard") {
+      if (location.pathname === "/dashboard" && !hasAuthCode) {
         navigate("/login", { replace: true });
       }
       return;
@@ -54,7 +57,7 @@ export default function App() {
     if (location.pathname === "/login" || location.pathname === "/landingpage" || location.pathname === "/") {
       navigate("/dashboard", { replace: true });
     }
-  }, [token, location.pathname, navigate]);
+  }, [token, location.pathname, location.search, navigate]);
 
   const handleLogin = () => {
     redirectToSpotifyAuth();
