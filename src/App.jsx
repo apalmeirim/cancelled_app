@@ -17,12 +17,6 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // Debug signal for token presence
-    // eslint-disable-next-line no-console
-    console.log("[Auth]", token ? "Token detected" : "No token");
-  }, [token]);
-
-  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const redirectParam = params.get("redirect");
     if (!redirectParam) return;
@@ -45,8 +39,6 @@ export default function App() {
     const code = params.get("code");
     if (!code) return;
 
-    console.log("[Auth] Exchanging Spotify code...");
-
     let cancelled = false;
 
     (async () => {
@@ -55,8 +47,6 @@ export default function App() {
       if (newToken) {
         setToken(newToken);
         navigate("/dashboard", { replace: true });
-      } else {
-        console.warn("[Auth] Token exchange returned no token");
       }
     })();
 

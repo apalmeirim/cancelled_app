@@ -21,10 +21,6 @@ export default function LoginPage({ token, onLogin }) {
         </p>
       </div>
       <SpotifyConnectButton onClick={onLogin} />
-      <div className="w-full rounded-lg border border-dashed border-white/10 bg-slate-900/40 px-4 py-3 text-left text-xs font-mono text-slate-300/80">
-        <p className="uppercase tracking-[0.35em] text-slate-400">Debug</p>
-        <p>Token present: {token ? "yes" : "no"}</p>
-      </div>
     </Card>
   );
 }
