@@ -15,8 +15,6 @@ export function getAuthUrl() {
         scope: SCOPES.join(' '),
         state: crypto.randomUUID(),
     });
-    console.log("Auth URL:", `https://accounts.spotify.com/authorize?${params.toString()}`);
-    alert(`Redirect URI sent to Spotify:\n${REDIRECT_URI}`);
     return `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
