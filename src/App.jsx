@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   redirectToSpotifyAuth,
   handleRedirectCallback,
@@ -13,6 +13,17 @@ import DashboardPage from "./pages/DashboardPage";
 
 export default function App() {
   const [token, setToken] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const storedPath = sessionStorage.getItem("gh_redirect");
+    if (storedPath) {
+      sessionStorage.removeItem("gh_redirect");
+      const target = storedPath.startsWith("/") ? storedPath : `/${storedPath}`;
+      navigate(target, { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     async function checkAuth() {
@@ -31,6 +42,19 @@ export default function App() {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    if (!token) {
+      if (location.pathname === "/dashboard") {
+        navigate("/login", { replace: true });
+      }
+      return;
+    }
+
+    if (location.pathname === "/login" || location.pathname === "/landingpage" || location.pathname === "/") {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [token, location.pathname, navigate]);
+
   const handleLogin = () => {
     redirectToSpotifyAuth();
   };
@@ -38,6 +62,7 @@ export default function App() {
   const handleLogout = () => {
     logoutSpotify();
     setToken(null);
+    navigate("/login", { replace: true });
   };
 
   return (
