@@ -66,7 +66,7 @@ export default function App() {
       return;
     }
 
-    if (location.pathname === "/login" || location.pathname === "/landingpage" || location.pathname === "/") {
+    if (location.pathname === "/login" || location.pathname === "/") {
       navigate("/dashboard", { replace: true });
     }
   }, [token, location.pathname, location.search, navigate]);
