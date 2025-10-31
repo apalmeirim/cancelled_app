@@ -51,9 +51,7 @@ export async function redirectToSpotifyAuth() {
 }
 
 // Handle redirect back from Spotify
-export async function handleRedirectCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
+export async function handleRedirectCallback(code) {
   if (!code) return null;
 
   const codeVerifier = localStorage.getItem("spotify_code_verifier");
@@ -76,11 +74,10 @@ export async function handleRedirectCallback() {
 
   if (data.access_token) {
     localStorage.setItem("spotify_access_token", data.access_token);
+    localStorage.removeItem("spotify_code_verifier");
   }
 
-  // Clean up the URL
-  window.history.replaceState({}, document.title, REDIRECT_URI);
-  return data.access_token;
+  return data.access_token ?? null;
 }
 
 // Helper: get stored token

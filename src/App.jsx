@@ -27,21 +27,32 @@ export default function App() {
   }, [navigate]);
 
   useEffect(() => {
-    async function checkAuth() {
-      const newToken = await handleRedirectCallback();
+    const savedToken = getStoredAccessToken();
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+    if (!code) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const newToken = await handleRedirectCallback(code);
+      if (cancelled) return;
       if (newToken) {
         setToken(newToken);
-        return;
+        navigate("/dashboard", { replace: true });
       }
+    })();
 
-      const savedToken = getStoredAccessToken();
-      if (savedToken) {
-        setToken(savedToken);
-      }
-    }
-
-    checkAuth();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [location.search, navigate]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
