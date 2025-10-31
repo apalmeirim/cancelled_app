@@ -17,10 +17,11 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
-    const storedPath = sessionStorage.getItem("gh_redirect");
-    if (storedPath) {
-      sessionStorage.removeItem("gh_redirect");
-      const target = storedPath.startsWith("/") ? storedPath : `/${storedPath}`;
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get("redirect");
+    if (redirectParam) {
+      const decoded = decodeURIComponent(redirectParam);
+      const target = decoded.startsWith("/") ? decoded : `/${decoded}`;
       navigate(target, { replace: true });
     }
   }, [navigate]);
