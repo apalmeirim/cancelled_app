@@ -1,5 +1,5 @@
 const CLIENT_ID = '07218c6f90be4c9aa05dda9c17a63f3a';
-const REDIRECT_URI = 'https://apalmeirim.github.io/cancelled';
+const REDIRECT_URI = 'https://apalmeirim.github.io/cancelled_app/';
 const SCOPES = [
     "playlist-read-private",
     "playlist-read-collaborative",
