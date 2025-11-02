@@ -10,6 +10,7 @@ export default function PlaylistGrid({
   onClearSelection,
   isLoading,
   isScanning,
+  isRemoving,
   error,
   onRetry,
   onOpenPlaylist,
@@ -17,7 +18,7 @@ export default function PlaylistGrid({
   const selectedCount = selectedIds.length;
   const totalPlaylists = playlists.length;
   const hasPlaylists = totalPlaylists > 0;
-  const isBusy = isLoading || isScanning;
+  const isBusy = isLoading || isScanning || isRemoving;
   const canSelectAll = hasPlaylists && selectedCount !== totalPlaylists && !isBusy && !error;
   const canClear = !!selectedCount && !isBusy;
   const handleRetry = onRetry ?? (() => {});

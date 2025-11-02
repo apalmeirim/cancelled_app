@@ -10,6 +10,7 @@ export default function ArtistRemovalPanel({
   onSubmit,
   disabled,
   isScanning,
+  isRemoving,
   scanError,
 }) {
   const [inputValue, setInputValue] = useState("");
@@ -97,16 +98,18 @@ export default function ArtistRemovalPanel({
               ? "Select playlists to enable the scan"
               : isScanning
               ? "Scanning in progress..."
+              : isRemoving
+              ? "Removing matched tracks..."
               : "You are ready to queue a cleanup scan"}
           </p>
           <Button
             variant="primary"
             size="md"
             onClick={onSubmit}
-            disabled={disabled || !artists.length || isScanning}
+            disabled={disabled || !artists.length || isScanning || isRemoving}
             className="px-6"
           >
-            {isScanning ? "Scanning..." : "Scan selected playlists"}
+            {isScanning ? "Scanning..." : isRemoving ? "Removing..." : "Scan selected playlists"}
           </Button>
         </div>
         {scanError ? (

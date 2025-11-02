@@ -3,7 +3,14 @@ import Button from "../ui/Button";
 
 const MAX_TRACKS_DISPLAY = 25;
 
-export default function ScanResults({ results, isScanning }) {
+export default function ScanResults({
+  results,
+  isScanning,
+  onRemoveMatches,
+  isRemoving,
+  removeError,
+  removeSummary,
+}) {
   if (!results && !isScanning) {
     return null;
   }
@@ -11,6 +18,7 @@ export default function ScanResults({ results, isScanning }) {
   const playlistsWithMatches = results?.playlists?.filter(playlist => playlist.matches.length) ?? [];
   const totalMatches = results?.totalMatches ?? 0;
   const scannedCount = results?.totalPlaylistsScanned ?? 0;
+  const canRemove = !!onRemoveMatches && playlistsWithMatches.length > 0;
 
   return (
     <Card padding="lg" className="border-white/10 bg-slate-950/45 space-y-6">
@@ -27,6 +35,34 @@ export default function ScanResults({ results, isScanning }) {
             : "Kick off a scan to see which tracks will be removed."}
         </p>
       </header>
+
+      {canRemove ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-slate-200/80">
+          <span>
+            {totalMatches} track{totalMatches === 1 ? "" : "s"} ready for removal across {playlistsWithMatches.length} playlist{playlistsWithMatches.length === 1 ? "" : "s"}.
+          </span>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onRemoveMatches}
+            disabled={isScanning || isRemoving}
+          >
+            {isRemoving ? "Removing..." : "Remove matched tracks"}
+          </Button>
+        </div>
+      ) : null}
+
+      {removeError ? (
+        <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-xs text-red-200">
+          {removeError}
+        </p>
+      ) : null}
+
+      {removeSummary ? (
+        <p className="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-xs text-emerald-100">
+          {removeSummary}
+        </p>
+      ) : null}
 
       {isScanning && !results ? (
         <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-slate-300/80">

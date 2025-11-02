@@ -27,6 +27,71 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   const [scanResults, setScanResults] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState(null);
+  const [removeSummary, setRemoveSummary] = useState(null);
+
+  useEffect(() => {
+    if (!token) {
+      setUserProfile(null);
+      setProfileError(null);
+      setIsProfileLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsProfileLoading(true);
+    setProfileError(null);
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch("https://api.spotify.com/v1/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401) {
+          throw new Error("Your Spotify session expired. Please reconnect.");
+        }
+
+        if (!response.ok) {
+          throw new Error("We couldn't load your Spotify profile. Please try again.");
+        }
+
+        const data = await response.json();
+
+        if (!data?.id) {
+          throw new Error("We couldn't identify your Spotify account.");
+        }
+
+        if (!cancelled) {
+          setUserProfile({
+            id: data.id,
+            displayName: data.display_name ?? data.id,
+          });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setProfileError(error.message || "Unexpected error loading your Spotify profile.");
+          setUserProfile(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsProfileLoading(false);
+        }
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   useEffect(() => {
     if (!token) {
@@ -37,6 +102,22 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
       setScanResults(null);
       setScanError(null);
       setIsScanning(false);
+      setIsRemoving(false);
+      setRemoveError(null);
+      setRemoveSummary(null);
+      return;
+    }
+
+    if (profileError) {
+      setFetchError(profileError);
+      setPlaylists([]);
+      setSelectedIds([]);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!userProfile?.id) {
+      setIsLoading(isProfileLoading);
       return;
     }
 
@@ -70,23 +151,15 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
           nextUrl = data.next;
         }
 
-        const mapped = rawPlaylists.map((playlist, index) => {
-          const owner =
-            playlist.owner?.display_name ??
-            playlist.owner?.id ??
-            "Unknown creator";
-          const description = playlist.description
-            ? playlist.description.replace(/<[^>]*>/g, "").trim()
-            : "";
+        const ownedPlaylists = rawPlaylists.filter(
+          playlist => playlist.owner?.id === userProfile.id
+        );
 
+        const mapped = ownedPlaylists.map((playlist, index) => {
           return {
             id: playlist.id,
             name: playlist.name,
-            description: description || `Created by ${owner}`,
             tracks: playlist.tracks?.total ?? 0,
-            owner,
-            isPublic: playlist.public,
-            collaborative: playlist.collaborative,
             image: playlist.images?.[0]?.url ?? null,
             coverGradient:
               playlist.images?.[0]?.url
@@ -94,7 +167,6 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
                 : FALLBACK_COVER_GRADIENTS[
                     index % FALLBACK_COVER_GRADIENTS.length
                   ],
-            tags: playlist.collaborative ? ["Collaborative"] : [],
             uri: playlist.uri,
             externalUrl: playlist.external_urls?.spotify ?? null,
           };
@@ -124,7 +196,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     return () => {
       cancelled = true;
     };
-  }, [token, refreshIndex]);
+  }, [token, refreshIndex, userProfile?.id, profileError, isProfileLoading]);
 
   const handleTogglePlaylist = id => {
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]));
@@ -147,7 +219,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   };
 
   const handleSubmit = async () => {
-    if (!token || !selectedIds.length || !artists.length || isScanning) return;
+    if (!token || !selectedIds.length || !artists.length || isScanning || isRemoving) return;
 
     const normalizedMap = new Map();
     artists.forEach(name => {
@@ -172,6 +244,8 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     setIsScanning(true);
     setScanError(null);
     setScanResults(null);
+    setRemoveError(null);
+    setRemoveSummary(null);
 
     try {
       const playlistResults = [];
@@ -261,6 +335,109 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     }
   };
 
+  const handleRemoveMatches = async () => {
+    if (!token || !scanResults || isRemoving) return;
+
+    const playlistsWithMatches = (scanResults.playlists ?? []).filter(
+      playlist => playlist?.id && Array.isArray(playlist.matches) && playlist.matches.length
+    );
+
+    if (!playlistsWithMatches.length) {
+      setRemoveError("No matched tracks are available for removal.");
+      return;
+    }
+
+    setIsRemoving(true);
+    setRemoveError(null);
+    setRemoveSummary(null);
+
+    try {
+      let removedTrackCount = 0;
+      let affectedPlaylists = 0;
+
+      const updatedById = new Map();
+
+      for (const playlist of playlistsWithMatches) {
+        const validMatches = playlist.matches.filter(match => match?.uri);
+        const uniqueUris = Array.from(new Set(validMatches.map(match => match.uri)));
+
+        if (!uniqueUris.length) {
+          continue;
+        }
+
+        for (let i = 0; i < uniqueUris.length; i += 100) {
+          const chunk = uniqueUris.slice(i, i + 100);
+          const response = await fetch(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tracks: chunk.map(uri => ({ uri })),
+            }),
+          });
+
+          if (response.status === 401) {
+            throw new Error("Your Spotify session expired. Please reconnect.");
+          }
+
+          if (response.status === 429) {
+            const retryAfter = response.headers.get("Retry-After");
+            throw new Error(
+              retryAfter
+                ? `Spotify rate limited the request. Try again in ${retryAfter} seconds.`
+                : "Spotify rate limited the request. Please try again shortly."
+            );
+          }
+
+          if (!response.ok) {
+            throw new Error("We couldn't remove some tracks. Please try again.");
+          }
+        }
+
+        removedTrackCount += playlist.matches.length;
+        affectedPlaylists += 1;
+
+        updatedById.set(playlist.id, {
+          ...playlist,
+          matches: [],
+        });
+      }
+
+      if (updatedById.size) {
+        const updatedPlaylists = (scanResults.playlists ?? []).map(playlist =>
+          updatedById.get(playlist.id) ?? playlist
+        );
+
+        const remainingMatches = updatedPlaylists.reduce(
+          (total, playlist) => total + playlist.matches.length,
+          0
+        );
+
+        setScanResults({
+          ...scanResults,
+          playlists: updatedPlaylists,
+          totalMatches: remainingMatches,
+        });
+
+        setRefreshIndex(index => index + 1);
+      }
+
+      if (removedTrackCount) {
+        setRemoveSummary(
+          `Removed ${removedTrackCount} track${removedTrackCount === 1 ? "" : "s"} across ${affectedPlaylists} playlist${affectedPlaylists === 1 ? "" : "s"}.`
+        );
+      } else {
+        setRemoveSummary("No removable tracks were found in the scan results.");
+      }
+    } catch (error) {
+      setRemoveError(error.message || "Unexpected error while removing tracks.");
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
   const handleRefreshPlaylists = () => {
     if (!token) return;
     setRefreshIndex(index => index + 1);
@@ -318,9 +495,10 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         onTogglePlaylist={handleTogglePlaylist}
         onSelectAll={handleSelectAll}
         onClearSelection={handleClearSelection}
-        isLoading={isLoading}
+        isLoading={isLoading || isProfileLoading}
         isScanning={isScanning}
-        error={fetchError}
+        isRemoving={isRemoving}
+        error={fetchError || profileError}
         onRetry={handleRefreshPlaylists}
         onOpenPlaylist={handleOpenPlaylist}
       />
@@ -330,12 +508,20 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         onAddArtist={handleAddArtist}
         onRemoveArtist={handleRemoveArtist}
         onSubmit={handleSubmit}
-        disabled={!selectedIds.length || isLoading}
+        disabled={!selectedIds.length || isLoading || isProfileLoading}
         isScanning={isScanning}
+        isRemoving={isRemoving}
         scanError={scanError}
       />
 
-      <ScanResults results={scanResults} isScanning={isScanning} />
+      <ScanResults
+        results={scanResults}
+        isScanning={isScanning}
+        onRemoveMatches={handleRemoveMatches}
+        isRemoving={isRemoving}
+        removeError={removeError}
+        removeSummary={removeSummary}
+      />
 
       <Card padding="lg" className="border-white/10 bg-slate-950/45">
         <div className="grid gap-6 md:grid-cols-2">
