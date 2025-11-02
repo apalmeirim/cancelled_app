@@ -62,9 +62,6 @@ export default function TutorialModal({
               other collection.
             </p>
           </div>
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
-            Scan playlists normally
-          </div>
         </Card>
 
         <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
@@ -75,9 +72,6 @@ export default function TutorialModal({
               Once you&apos;re happy with the results, clear your Liked Songs and add back the tracks from{" "}
               <span className="font-semibold">&quot;ls copy&quot;</span> so the cleaned list becomes your new library.
             </p>
-          </div>
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
-            Swap Liked Songs with ls copy
           </div>
         </Card>
       </div>
