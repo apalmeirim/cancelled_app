@@ -1,62 +1,85 @@
 import Modal from "../ui/Modal";
 import Card from "../ui/Card";
+import Button from "../ui/Button";
 
-const tutorialSteps = [
-  {
-    title: "Save your liked songs to a new playlist",
-    description:
-      "In Spotify, select all tracks from Liked Songs and add them to a brand new playlist. This gives us a playlist endpoint to work with.",
-  },
-  {
-    title: "Sync the new playlist inside Cancelled",
-    description:
-      "Return to the dashboard, refresh playlists, and find the temporary playlist you just created.",
-  },
-  {
-    title: "Run the artist removal scan",
-    description:
-      "Select the temporary playlist along with any others you want to clean, then add the artists you'd like to remove.",
-  },
-  {
-    title: "Review the generated removal list",
-    description:
-      "We'll list every match we can delete. You'll get the option to approve each track before syncing back to Spotify.",
-  },
-  {
-    title: "Resync or delete the temporary playlist",
-    description:
-      "Once you're done, either keep the curated playlist or sync it back into Liked Songs manually.",
-  },
-];
+export default function TutorialModal({
+  isOpen,
+  onClose,
+  onCreateCopy,
+  isCreatingCopy,
+  creationStatus,
+}) {
+  const statusClass =
+    creationStatus?.type === "error"
+      ? "border-red-400/40 bg-red-500/10 text-red-200"
+      : "border-white/20 bg-white/10 text-gray-200";
 
-export default function TutorialModal({ isOpen, onClose }) {
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
       title="Tutorial: Cleaning your Liked Songs"
       description="Spotify treats Liked Songs differently than playlists. Follow this guide to work around the limitation."
-      className="max-w-4xl"
+      className="w-full max-w-5xl"
     >
-      <div className="grid gap-6">
-        {tutorialSteps.map((step, index) => (
-          <Card
-            key={step.title}
-            padding="md"
-            className="grid gap-4 border-white/10 bg-black/60 md:grid-cols-[minmax(0,1fr)_250px]"
-          >
-            <div className="space-y-2 text-center md:text-left">
-              <p className="text-xs uppercase tracking-[0.35em] text-gray-500">
-                Step {index + 1}
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 1</p>
+            <h3 className="text-lg font-semibold text-white">Clone your liked songs automatically</h3>
+            <p className="text-sm text-gray-300">
+              We&apos;ll create a playlist named <span className="font-semibold">&quot;ls copy&quot;</span> that
+              mirrors every track in your Liked Songs.
+            </p>
+          </div>
+          <div className="space-y-3">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onCreateCopy}
+              disabled={!onCreateCopy || isCreatingCopy}
+              className="w-full justify-center"
+            >
+              {isCreatingCopy ? "Creating..." : 'Create "ls copy"'}
+            </Button>
+            {creationStatus ? (
+              <p className={`rounded-xl border px-4 py-3 text-xs ${statusClass}`}>
+                {creationStatus.message}
               </p>
-              <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-              <p className="text-sm text-gray-300">{step.description}</p>
-            </div>
-            <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
-              Screenshot placeholder
-            </div>
-          </Card>
-        ))}
+            ) : null}
+            <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gray-500">
+              Requires Spotify to authorise liked songs access
+            </p>
+          </div>
+        </Card>
+
+        <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 2</p>
+            <h3 className="text-lg font-semibold text-white">Use Cancelled as usual</h3>
+            <p className="text-sm text-gray-300">
+              After the playlist is created, refresh your dashboard playlists and run scans exactly as you would for any
+              other collection.
+            </p>
+          </div>
+          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
+            Scan playlists normally
+          </div>
+        </Card>
+
+        <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 3</p>
+            <h3 className="text-lg font-semibold text-white">Replace your Liked Songs</h3>
+            <p className="text-sm text-gray-300">
+              Once you&apos;re happy with the results, clear your Liked Songs and add back the tracks from{" "}
+              <span className="font-semibold">&quot;ls copy&quot;</span> so the cleaned list becomes your new library.
+            </p>
+          </div>
+          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
+            Swap Liked Songs with ls copy
+          </div>
+        </Card>
       </div>
     </Modal>
   );

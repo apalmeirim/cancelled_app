@@ -33,6 +33,8 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   const [isRemoving, setIsRemoving] = useState(false);
   const [removeError, setRemoveError] = useState(null);
   const [removeSummary, setRemoveSummary] = useState(null);
+  const [isCreatingLikedSongsCopy, setIsCreatingLikedSongsCopy] = useState(false);
+  const [likedSongsCopyFeedback, setLikedSongsCopyFeedback] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -105,6 +107,8 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
       setIsRemoving(false);
       setRemoveError(null);
       setRemoveSummary(null);
+      setIsCreatingLikedSongsCopy(false);
+      setLikedSongsCopyFeedback(null);
       return;
     }
 
@@ -438,6 +442,131 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     }
   };
 
+  const handleCreateLikedSongsCopy = async () => {
+    if (!token || !userProfile?.id || isCreatingLikedSongsCopy) return;
+
+    setLikedSongsCopyFeedback(null);
+    setIsCreatingLikedSongsCopy(true);
+
+    try {
+      const createResponse = await fetch(`https://api.spotify.com/v1/users/${userProfile.id}/playlists`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "ls copy",
+          description: "Auto-generated copy of Liked Songs created by Cancelled.",
+          public: false,
+        }),
+      });
+
+      if (createResponse.status === 401) {
+        throw new Error("Your Spotify session expired. Please reconnect.");
+      }
+
+      if (createResponse.status === 403) {
+        throw new Error("Spotify denied playlist creation. Please check your account permissions.");
+      }
+
+      if (!createResponse.ok) {
+        throw new Error("We couldn't create the playlist. Please try again.");
+      }
+
+      const playlistData = await createResponse.json();
+      const playlistId = playlistData?.id;
+      if (!playlistId) {
+        throw new Error("Spotify did not return a playlist ID.");
+      }
+
+      let nextUrl = "https://api.spotify.com/v1/me/tracks?limit=50";
+      const trackUris = [];
+
+      while (nextUrl) {
+        const likedResponse = await fetch(nextUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (likedResponse.status === 401) {
+          throw new Error("Your Spotify session expired. Please reconnect.");
+        }
+
+        if (likedResponse.status === 429) {
+          const retryAfter = likedResponse.headers.get("Retry-After");
+          throw new Error(
+            retryAfter
+              ? `Spotify rate limited the request. Try again in ${retryAfter} seconds.`
+              : "Spotify rate limited the request. Please try again shortly."
+          );
+        }
+
+        if (!likedResponse.ok) {
+          throw new Error("We couldn't fetch your liked songs. Please try again.");
+        }
+
+        const likedData = await likedResponse.json();
+        const items = likedData.items ?? [];
+
+        items.forEach(item => {
+          const uri = item?.track?.uri;
+          if (uri) {
+            trackUris.push(uri);
+          }
+        });
+
+        nextUrl = likedData.next;
+      }
+
+      for (let index = 0; index < trackUris.length; index += 100) {
+        const chunk = trackUris.slice(index, index + 100);
+        const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ uris: chunk }),
+        });
+
+        if (addResponse.status === 401) {
+          throw new Error("Your Spotify session expired. Please reconnect.");
+        }
+
+        if (addResponse.status === 429) {
+          const retryAfter = addResponse.headers.get("Retry-After");
+          throw new Error(
+            retryAfter
+              ? `Spotify rate limited the request. Try again in ${retryAfter} seconds.`
+              : "Spotify rate limited the request. Please try again shortly."
+          );
+        }
+
+        if (!addResponse.ok) {
+          throw new Error("We couldn't add tracks to the new playlist. Please try again.");
+        }
+      }
+
+      setLikedSongsCopyFeedback({
+        type: "success",
+        message: trackUris.length
+          ? `Created "ls copy" with ${trackUris.length} track${trackUris.length === 1 ? "" : "s"}.`
+          : 'Created "ls copy" but your Liked Songs list was empty.',
+      });
+
+      setRefreshIndex(index => index + 1);
+    } catch (error) {
+      setLikedSongsCopyFeedback({
+        type: "error",
+        message: error.message || "Unexpected error creating the Liked Songs copy.",
+      });
+    } finally {
+      setIsCreatingLikedSongsCopy(false);
+    }
+  };
+
   const handleRefreshPlaylists = () => {
     if (!token) return;
     setRefreshIndex(index => index + 1);
@@ -473,18 +602,15 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     <div className="space-y-14 text-center">
       <header className="flex flex-col items-center gap-5">
         <div className="space-y-3">
-          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-white">d@shboard</h1>
+          <h1 className="text-3xl font-semibold tracking-[0.4em] text-white">d@shboard</h1>
           <p className="mx-auto max-w-2xl text-sm text-gray-300">
             select playlist(s) and remove any artist(s).
             for "Liked Songs", view tutorial.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.35em] text-gray-500">
-          <Button variant="ghost" size="sm" onClick={onLogout}>
-            Log out
-          </Button>
           <Button variant="outline" size="sm" onClick={() => setModalOpen(true)}>
-            Liked songs tutorial
+            tutorial for "Liked Songs"
           </Button>
         </div>
       </header>
@@ -523,23 +649,19 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         removeSummary={removeSummary}
       />
 
-      <Card padding="lg" className="border-white/10 bg-black/60 space-y-6">
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Sync summary</p>
-          <h2 className="text-xl font-semibold text-white">What happens next?</h2>
-          <p className="text-sm text-gray-300">
-            Cancelled runs safely on top of Spotify API endpoints. Once integrations are live, we will display a full
-            report of every track slated for removal, complete with undo history.
-          </p>
-        </div>
-        <ul className="space-y-3 text-sm text-gray-200">
-          <li>- Nothing is deleted until you explicitly approve the sync.</li>
-          <li>- We keep an audit log of every track for recovery.</li>
-          <li>- Collaboration support is on the roadmap for shared playlists.</li>
-        </ul>
-      </Card>
+      <TutorialModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreateCopy={handleCreateLikedSongsCopy}
+        isCreatingCopy={isCreatingLikedSongsCopy}
+        creationStatus={likedSongsCopyFeedback}
+      />
 
-      <TutorialModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <div className="flex justify-center">
+        <Button variant="ghost" size="sm" onClick={onLogout}>
+          Log out
+        </Button>
+      </div>
     </div>
   );
 }
