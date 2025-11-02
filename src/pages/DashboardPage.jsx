@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PlaylistGrid from "../components/dashboard/PlaylistGrid";
 import ArtistRemovalPanel from "../components/dashboard/ArtistRemovalPanel";
 import TutorialModal from "../components/dashboard/TutorialModal";
+import ScanResults from "../components/dashboard/ScanResults";
 import SpotifyConnectButton from "../components/common/SpotifyConnectButton";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
@@ -23,6 +24,9 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
   const [refreshIndex, setRefreshIndex] = useState(0);
+  const [scanResults, setScanResults] = useState(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanError, setScanError] = useState(null);
 
   useEffect(() => {
     if (!token) {
@@ -30,6 +34,9 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
       setSelectedIds([]);
       setFetchError(null);
       setIsLoading(false);
+      setScanResults(null);
+      setScanError(null);
+      setIsScanning(false);
       return;
     }
 
@@ -89,6 +96,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
                   ],
             tags: playlist.collaborative ? ["Collaborative"] : [],
             uri: playlist.uri,
+            externalUrl: playlist.external_urls?.spotify ?? null,
           };
         });
 
@@ -138,14 +146,129 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     setArtists(prev => prev.filter(artist => artist !== name));
   };
 
-  const handleSubmit = () => {
-    // Placeholder for upcoming integration with Spotify APIs
-    console.table({ selectedPlaylists: selectedIds, artists });
+  const handleSubmit = async () => {
+    if (!token || !selectedIds.length || !artists.length || isScanning) return;
+
+    const normalizedMap = new Map();
+    artists.forEach(name => {
+      const trimmed = name.trim();
+      if (!trimmed) return;
+      normalizedMap.set(trimmed.toLowerCase(), trimmed);
+    });
+
+    if (!normalizedMap.size) {
+      setScanError("Add at least one artist to scan.");
+      return;
+    }
+
+    const normalizedKeys = Array.from(normalizedMap.keys());
+    const playlistsToScan = playlists.filter(playlist => selectedIds.includes(playlist.id));
+
+    if (!playlistsToScan.length) {
+      setScanError("Select at least one playlist to scan.");
+      return;
+    }
+
+    setIsScanning(true);
+    setScanError(null);
+    setScanResults(null);
+
+    try {
+      const playlistResults = [];
+      let totalMatches = 0;
+
+      for (const playlist of playlistsToScan) {
+        let nextUrl = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?limit=100`;
+        const matches = [];
+
+        while (nextUrl) {
+          const response = await fetch(nextUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 401) {
+            throw new Error("Your Spotify session expired. Please reconnect.");
+          }
+
+          if (response.status === 429) {
+            const retryAfter = response.headers.get("Retry-After");
+            throw new Error(
+              retryAfter
+                ? `Spotify rate limited the request. Try again in ${retryAfter} seconds.`
+                : "Spotify rate limited the request. Please try again shortly."
+            );
+          }
+
+          if (!response.ok) {
+            throw new Error("We couldn't finish scanning. Please try again.");
+          }
+
+          const data = await response.json();
+          const items = data.items ?? [];
+
+          items.forEach(item => {
+            const track = item.track;
+            if (!track) return;
+
+            const trackArtistNames = (track.artists ?? [])
+              .map(artist => artist?.name?.trim().toLowerCase())
+              .filter(Boolean);
+
+            if (!trackArtistNames.length) return;
+
+            const matchedKeys = normalizedKeys.filter(key => trackArtistNames.includes(key));
+            if (!matchedKeys.length) return;
+
+            const matchedArtists = matchedKeys.map(key => normalizedMap.get(key));
+
+            matches.push({
+              id: track.id ?? track.uri ?? track.href ?? `${track.name}-${Math.random()}`,
+              name: track.name ?? "Unknown track",
+              artists: (track.artists ?? []).map(artist => artist?.name).filter(Boolean),
+              matchedArtists,
+              uri: track.uri ?? null,
+              externalUrl: track.external_urls?.spotify ?? null,
+              album: track.album?.name ?? "",
+            });
+          });
+
+          nextUrl = data.next;
+        }
+
+        totalMatches += matches.length;
+        playlistResults.push({
+          id: playlist.id,
+          name: playlist.name,
+          matches,
+          totalTracks: playlist.tracks,
+          externalUrl: playlist.externalUrl,
+        });
+      }
+
+      setScanResults({
+        timestamp: Date.now(),
+        artists: Array.from(normalizedMap.values()),
+        totalPlaylistsScanned: playlistsToScan.length,
+        totalMatches,
+        playlists: playlistResults,
+      });
+    } catch (error) {
+      setScanError(error.message || "Unexpected error while scanning playlists.");
+    } finally {
+      setIsScanning(false);
+    }
   };
 
   const handleRefreshPlaylists = () => {
     if (!token) return;
     setRefreshIndex(index => index + 1);
+  };
+
+  const handleOpenPlaylist = playlist => {
+    if (!playlist?.externalUrl) return;
+    window.open(playlist.externalUrl, "_blank", "noopener,noreferrer");
   };
 
   if (!token) {
@@ -196,8 +319,10 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         onSelectAll={handleSelectAll}
         onClearSelection={handleClearSelection}
         isLoading={isLoading}
+        isScanning={isScanning}
         error={fetchError}
         onRetry={handleRefreshPlaylists}
+        onOpenPlaylist={handleOpenPlaylist}
       />
 
       <ArtistRemovalPanel
@@ -205,8 +330,12 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         onAddArtist={handleAddArtist}
         onRemoveArtist={handleRemoveArtist}
         onSubmit={handleSubmit}
-        disabled={!selectedIds.length}
+        disabled={!selectedIds.length || isLoading}
+        isScanning={isScanning}
+        scanError={scanError}
       />
+
+      <ScanResults results={scanResults} isScanning={isScanning} />
 
       <Card padding="lg" className="border-white/10 bg-slate-950/45">
         <div className="grid gap-6 md:grid-cols-2">

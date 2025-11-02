@@ -1,97 +1,104 @@
-import { Fragment } from "react";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import cn from "../../utils/cn";
 
-export default function PlaylistCard({ playlist, selected, onToggle }) {
-  const infoRows = [
-    {
-      label: "Tracks",
-      value: playlist.tracks ?? "N/A",
-    },
-    {
-      label: "Visibility",
-      value:
-        playlist.isPublic === undefined || playlist.isPublic === null
-          ? "N/A"
-          : playlist.isPublic
-          ? "Public"
-          : "Private",
-    },
-    {
-      label: "Collaborative",
-      value: playlist.collaborative ? "Yes" : "No",
-    },
-  ];
-
-  const coverGradient =
+export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isBusy }) {
+  const gradient =
     playlist.coverGradient ??
     "linear-gradient(135deg, rgba(16,205,230,0.55), rgba(129,140,248,0.45))";
 
+  const handleSelect = event => {
+    event.stopPropagation();
+    if (isBusy) return;
+    onToggle(playlist.id);
+  };
+
+  const handleOpen = event => {
+    event.stopPropagation();
+    if (isBusy) return;
+    if (onOpen) {
+      onOpen(playlist);
+      return;
+    }
+    if (playlist.externalUrl) {
+      window.open(playlist.externalUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const trackCountLabel =
+    playlist.tracks === undefined || playlist.tracks === null
+      ? "Tracks N/A"
+      : `${playlist.tracks} track${playlist.tracks === 1 ? "" : "s"}`;
+
+  const visibilityLabel =
+    playlist.collaborative ? "Collaborative" : playlist.isPublic ? "Public" : "Private";
+
   return (
     <Card
+      padding="none"
       className={cn(
-        "flex h-full flex-col gap-4 transition duration-200",
-        selected ? "border-emerald-400/60 bg-slate-900/70" : "hover:border-emerald-400/40"
+        "group relative h-48 overflow-hidden transition duration-200",
+        selected ? "border-emerald-400/70 shadow-[0_16px_40px_rgba(16,185,129,0.35)]" : "hover:border-emerald-400/50",
+        isBusy ? "opacity-70" : ""
       )}
-      padding="md"
     >
-      <div className="relative min-h-[160px] overflow-hidden rounded-2xl text-white">
-        {playlist.image ? (
-          <img
-            src={playlist.image}
-            alt={playlist.name}
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="absolute inset-0" style={{ background: coverGradient }} aria-hidden="true" />
+      {playlist.image ? (
+        <img
+          src={playlist.image}
+          alt={playlist.name}
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <div className="absolute inset-0" style={{ background: gradient }} aria-hidden="true" />
+      )}
+      <div className="absolute inset-0 bg-slate-900/50 mix-blend-multiply" aria-hidden="true" />
+      <div
+        className={cn(
+          "absolute inset-0 border-2 border-transparent p-4 text-white transition",
+          selected ? "border-emerald-300/60" : ""
         )}
-        <div className="absolute inset-0 bg-slate-900/50" aria-hidden="true" />
-        <div className="absolute inset-0 bg-white/15 mix-blend-overlay" aria-hidden="true" />
-        <div className="relative z-10 space-y-2 p-6">
-          <p className="text-xs uppercase tracking-[0.45em] text-white/70">Playlist</p>
-          <h3 className="text-xl font-semibold leading-tight text-white">{playlist.name}</h3>
-          {playlist.owner ? (
-            <p className="text-xs uppercase tracking-[0.35em] text-white/70">
-              {playlist.owner}
+      >
+        <div className="flex h-full flex-col justify-between">
+          <div className="space-y-2">
+            <p className="text-[0.65rem] uppercase tracking-[0.35em] text-white/70">
+              {visibilityLabel}
             </p>
-          ) : null}
+          </div>
+          <div className="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-white/80">
+            <span>{trackCountLabel}</span>
+            {playlist.owner ? <span className="truncate pl-3 text-right">{playlist.owner}</span> : null}
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between gap-4 text-sm text-slate-200/80">
-        <div className="space-y-3">
-          {playlist.description ? <p className="text-slate-300/80">{playlist.description}</p> : null}
-          <div className="grid grid-cols-2 gap-y-2 text-xs uppercase tracking-[0.25em] text-slate-400">
-            {infoRows.map(row => (
-              <Fragment key={row.label}>
-                <span>{row.label}</span>
-                <span className="text-right text-slate-200/80">{row.value}</span>
-              </Fragment>
-            ))}
-          </div>
-          {playlist.tags?.length ? (
-            <div className="flex flex-wrap gap-2">
-              {playlist.tags.map(tag => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-[0.35em] text-slate-200/70"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 px-6 text-center opacity-0 transition duration-200 group-hover:opacity-100">
+        <div className="pointer-events-auto space-y-3">
+          <h3 className="text-lg font-semibold leading-tight text-emerald-100">{playlist.name}</h3>
+          {playlist.description ? (
+            <p className="text-xs text-slate-300/80">{playlist.description}</p>
           ) : null}
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button
+              variant={selected ? "secondary" : "primary"}
+              size="sm"
+              onClick={handleSelect}
+              disabled={isBusy}
+            >
+              {selected ? "Selected" : "Select"}
+            </Button>
+            {playlist.externalUrl ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleOpen}
+                disabled={isBusy}
+              >
+                Open in Spotify
+              </Button>
+            ) : null}
+          </div>
         </div>
-
-        <Button
-          variant={selected ? "secondary" : "outline"}
-          size="md"
-          onClick={() => onToggle(playlist.id)}
-        >
-          {selected ? "Selected" : "Select playlist"}
-        </Button>
       </div>
     </Card>
   );

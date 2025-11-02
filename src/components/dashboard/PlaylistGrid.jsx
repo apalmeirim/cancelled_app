@@ -9,15 +9,19 @@ export default function PlaylistGrid({
   onSelectAll,
   onClearSelection,
   isLoading,
+  isScanning,
   error,
   onRetry,
+  onOpenPlaylist,
 }) {
   const selectedCount = selectedIds.length;
   const totalPlaylists = playlists.length;
   const hasPlaylists = totalPlaylists > 0;
-  const canSelectAll = hasPlaylists && selectedCount !== totalPlaylists && !isLoading && !error;
-  const canClear = !!selectedCount && !isLoading;
+  const isBusy = isLoading || isScanning;
+  const canSelectAll = hasPlaylists && selectedCount !== totalPlaylists && !isBusy && !error;
+  const canClear = !!selectedCount && !isBusy;
   const handleRetry = onRetry ?? (() => {});
+  const handleOpen = onOpenPlaylist ?? (() => {});
 
   return (
     <section className="space-y-6">
@@ -65,6 +69,8 @@ export default function PlaylistGrid({
                 playlist={playlist}
                 selected={selectedIds.includes(playlist.id)}
                 onToggle={onTogglePlaylist}
+                onOpen={handleOpen}
+                isBusy={isBusy}
               />
             ))}
           </div>
