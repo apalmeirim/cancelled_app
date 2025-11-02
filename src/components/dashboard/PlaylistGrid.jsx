@@ -8,8 +8,16 @@ export default function PlaylistGrid({
   onTogglePlaylist,
   onSelectAll,
   onClearSelection,
+  isLoading,
+  error,
+  onRetry,
 }) {
   const selectedCount = selectedIds.length;
+  const totalPlaylists = playlists.length;
+  const hasPlaylists = totalPlaylists > 0;
+  const canSelectAll = hasPlaylists && selectedCount !== totalPlaylists && !isLoading && !error;
+  const canClear = !!selectedCount && !isLoading;
+  const handleRetry = onRetry ?? (() => {});
 
   return (
     <section className="space-y-6">
@@ -22,10 +30,10 @@ export default function PlaylistGrid({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onClearSelection} disabled={!selectedCount}>
+          <Button variant="ghost" size="sm" onClick={onClearSelection} disabled={!canClear}>
             Clear
           </Button>
-          <Button variant="outline" size="sm" onClick={onSelectAll} disabled={selectedCount === playlists.length}>
+          <Button variant="outline" size="sm" onClick={onSelectAll} disabled={!canSelectAll}>
             Select all
           </Button>
         </div>
@@ -36,18 +44,35 @@ export default function PlaylistGrid({
           <span>
             {selectedCount ? `${selectedCount} playlist${selectedCount > 1 ? "s" : ""} selected` : "No playlist selected yet"}
           </span>
-          <span className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Total {playlists.length}</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Total {totalPlaylists}</span>
         </div>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {playlists.map(playlist => (
-            <PlaylistCard
-              key={playlist.id}
-              playlist={playlist}
-              selected={selectedIds.includes(playlist.id)}
-              onToggle={onTogglePlaylist}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex min-h-[160px] items-center justify-center text-sm text-slate-300/80">
+            Loading your playlists...
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center gap-4 py-10 text-center text-sm text-slate-300/80">
+            <p>{error}</p>
+            <Button variant="outline" size="sm" onClick={handleRetry}>
+              Try again
+            </Button>
+          </div>
+        ) : hasPlaylists ? (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {playlists.map(playlist => (
+              <PlaylistCard
+                key={playlist.id}
+                playlist={playlist}
+                selected={selectedIds.includes(playlist.id)}
+                onToggle={onTogglePlaylist}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex min-h-[160px] items-center justify-center text-sm text-slate-300/80">
+            No playlists found for this account.
+          </div>
+        )}
       </Card>
     </section>
   );

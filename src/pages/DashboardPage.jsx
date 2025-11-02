@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import PlaylistGrid from "../components/dashboard/PlaylistGrid";
 import ArtistRemovalPanel from "../components/dashboard/ArtistRemovalPanel";
 import TutorialModal from "../components/dashboard/TutorialModal";
@@ -6,74 +6,117 @@ import SpotifyConnectButton from "../components/common/SpotifyConnectButton";
 import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
-const MOCK_PLAYLISTS = [
-  {
-    id: "focus-flow",
-    name: "Focus Flow",
-    description: "Ambient electronica for deep work sprints.",
-    tracks: 86,
-    duration: "6 hr 12 min",
-    updated: "2 days ago",
-    tags: ["Lo-fi", "Instrumental"],
-    coverGradient: "linear-gradient(135deg, rgba(16,205,230,0.55), rgba(129,140,248,0.45))",
-  },
-  {
-    id: "cardio-pop",
-    name: "Cardio Pop",
-    description: "High-energy hits that keep your pace up.",
-    tracks: 54,
-    duration: "3 hr 4 min",
-    updated: "5 days ago",
-    tags: ["Workout", "Pop"],
-    coverGradient: "linear-gradient(135deg, rgba(236,72,153,0.55), rgba(34,211,238,0.45))",
-  },
-  {
-    id: "after-dark",
-    name: "After Dark Sessions",
-    description: "Smooth alt-R&B for late nights and soft lighting.",
-    tracks: 73,
-    duration: "4 hr 45 min",
-    updated: "1 week ago",
-    tags: ["R&B", "Night"],
-    coverGradient: "linear-gradient(135deg, rgba(79,70,229,0.5), rgba(236,72,153,0.4))",
-  },
-  {
-    id: "roadtrip",
-    name: "Pacific Coast Roadtrip",
-    description: "Sing-alongs, indie staples, and sunny classics.",
-    tracks: 108,
-    duration: "7 hr 20 min",
-    updated: "3 days ago",
-    tags: ["Indie", "Classic"],
-    coverGradient: "linear-gradient(135deg, rgba(45,212,191,0.55), rgba(250,204,21,0.4))",
-  },
-  {
-    id: "discover",
-    name: "Discover Dispatch",
-    description: "Weekly finds from Release Radar and friends.",
-    tracks: 35,
-    duration: "2 hr 18 min",
-    updated: "Today",
-    tags: ["Discovery"],
-    coverGradient: "linear-gradient(135deg, rgba(129,140,248,0.5), rgba(253,186,116,0.35))",
-  },
-  {
-    id: "coffeehouse",
-    name: "Sunday Coffeehouse",
-    description: "Acoustic warmth for slow mornings.",
-    tracks: 42,
-    duration: "2 hr 55 min",
-    updated: "4 days ago",
-    tags: ["Acoustic", "Morning"],
-    coverGradient: "linear-gradient(135deg, rgba(74,222,128,0.5), rgba(14,165,233,0.35))",
-  },
+const FALLBACK_COVER_GRADIENTS = [
+  "linear-gradient(135deg, rgba(16,205,230,0.55), rgba(129,140,248,0.45))",
+  "linear-gradient(135deg, rgba(236,72,153,0.55), rgba(34,211,238,0.45))",
+  "linear-gradient(135deg, rgba(79,70,229,0.5), rgba(236,72,153,0.4))",
+  "linear-gradient(135deg, rgba(45,212,191,0.55), rgba(250,204,21,0.4))",
+  "linear-gradient(135deg, rgba(129,140,248,0.5), rgba(253,186,116,0.35))",
+  "linear-gradient(135deg, rgba(74,222,128,0.5), rgba(14,165,233,0.35))",
 ];
 
 export default function DashboardPage({ token, onLogout, onLogin }) {
-  const playlists = useMemo(() => MOCK_PLAYLISTS, []);
+  const [playlists, setPlaylists] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [artists, setArtists] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const [refreshIndex, setRefreshIndex] = useState(0);
+
+  useEffect(() => {
+    if (!token) {
+      setPlaylists([]);
+      setSelectedIds([]);
+      setFetchError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadPlaylists = async () => {
+      setIsLoading(true);
+      setFetchError(null);
+
+      try {
+        let nextUrl = "https://api.spotify.com/v1/me/playlists?limit=50";
+        const rawPlaylists = [];
+
+        while (nextUrl) {
+          const response = await fetch(nextUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 401) {
+            throw new Error("Your Spotify session expired. Please reconnect.");
+          }
+
+          if (!response.ok) {
+            throw new Error("We couldn't load your playlists. Please try again.");
+          }
+
+          const data = await response.json();
+          rawPlaylists.push(...(data.items ?? []));
+          nextUrl = data.next;
+        }
+
+        const mapped = rawPlaylists.map((playlist, index) => {
+          const owner =
+            playlist.owner?.display_name ??
+            playlist.owner?.id ??
+            "Unknown creator";
+          const description = playlist.description
+            ? playlist.description.replace(/<[^>]*>/g, "").trim()
+            : "";
+
+          return {
+            id: playlist.id,
+            name: playlist.name,
+            description: description || `Created by ${owner}`,
+            tracks: playlist.tracks?.total ?? 0,
+            owner,
+            isPublic: playlist.public,
+            collaborative: playlist.collaborative,
+            image: playlist.images?.[0]?.url ?? null,
+            coverGradient:
+              playlist.images?.[0]?.url
+                ? null
+                : FALLBACK_COVER_GRADIENTS[
+                    index % FALLBACK_COVER_GRADIENTS.length
+                  ],
+            tags: playlist.collaborative ? ["Collaborative"] : [],
+            uri: playlist.uri,
+          };
+        });
+
+        if (!cancelled) {
+          setPlaylists(mapped);
+          setSelectedIds(prev =>
+            prev.filter(id => mapped.some(playlist => playlist.id === id))
+          );
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setFetchError(error.message || "Unexpected error loading playlists.");
+          setPlaylists([]);
+          setSelectedIds([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadPlaylists();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token, refreshIndex]);
 
   const handleTogglePlaylist = id => {
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]));
@@ -98,6 +141,11 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   const handleSubmit = () => {
     // Placeholder for upcoming integration with Spotify APIs
     console.table({ selectedPlaylists: selectedIds, artists });
+  };
+
+  const handleRefreshPlaylists = () => {
+    if (!token) return;
+    setRefreshIndex(index => index + 1);
   };
 
   if (!token) {
@@ -125,11 +173,10 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     <div className="space-y-14">
       <header className="flex flex-wrap items-center justify-between gap-6">
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Dashboard</p>
-          <h1 className="text-3xl font-semibold text-emerald-100">Curate faster with artist-based removals</h1>
+          <h1 className="text-3xl font-semibold text-emerald-100">d@shboard</h1>
           <p className="max-w-2xl text-sm text-slate-300/80">
-            Select playlists, queue artists, and approve results in batches. We will show you every track match before
-            syncing back to Spotify.
+            select playlist(s) and remove any artist(s).
+            for "Liked Songs", view tutorial.
           </p>
         </div>
         <div className="flex flex-col items-end gap-3 text-xs uppercase tracking-[0.35em] text-slate-400">
@@ -148,6 +195,9 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         onTogglePlaylist={handleTogglePlaylist}
         onSelectAll={handleSelectAll}
         onClearSelection={handleClearSelection}
+        isLoading={isLoading}
+        error={fetchError}
+        onRetry={handleRefreshPlaylists}
       />
 
       <ArtistRemovalPanel
