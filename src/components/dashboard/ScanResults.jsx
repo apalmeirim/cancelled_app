@@ -21,11 +21,11 @@ export default function ScanResults({
   const canRemove = !!onRemoveMatches && playlistsWithMatches.length > 0;
 
   return (
-    <Card padding="lg" className="border-white/10 bg-slate-950/45 space-y-6">
+    <Card padding="lg" className="border-white/10 bg-black/60 space-y-6 text-center">
       <header className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Scan summary</p>
-        <h2 className="text-xl font-semibold text-emerald-100">Review matched tracks</h2>
-        <p className="text-sm text-slate-300/80">
+        <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Scan summary</p>
+        <h2 className="text-xl font-semibold text-white">Review matched tracks</h2>
+        <p className="text-sm text-gray-300">
           {isScanning
             ? "We're scanning your playlists. This can take a moment for large collections."
             : results
@@ -37,7 +37,7 @@ export default function ScanResults({
       </header>
 
       {canRemove ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 text-sm text-slate-200/80">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-black/70 px-4 py-3 text-sm text-gray-200">
           <span>
             {totalMatches} track{totalMatches === 1 ? "" : "s"} ready for removal across {playlistsWithMatches.length} playlist{playlistsWithMatches.length === 1 ? "" : "s"}.
           </span>
@@ -53,23 +53,23 @@ export default function ScanResults({
       ) : null}
 
       {removeError ? (
-        <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-xs text-red-200">
+        <p className="rounded-xl border border-white/20 bg-black/60 px-4 py-3 text-xs text-red-200">
           {removeError}
         </p>
       ) : null}
 
       {removeSummary ? (
-        <p className="rounded-xl border border-emerald-300/30 bg-emerald-500/10 px-4 py-3 text-xs text-emerald-100">
+        <p className="rounded-xl border border-white/30 bg-white/5 px-4 py-3 text-xs text-gray-200">
           {removeSummary}
         </p>
       ) : null}
 
       {isScanning && !results ? (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-slate-300/80">
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-gray-300">
           Scanning in progress...
         </div>
       ) : playlistsWithMatches.length ? (
-        <div className="space-y-6">
+        <div className="space-y-6 text-center md:text-left">
           {playlistsWithMatches.map(playlist => {
             const visibleMatches = playlist.matches.slice(0, MAX_TRACKS_DISPLAY);
             const hiddenCount = playlist.matches.length - visibleMatches.length;
@@ -77,14 +77,14 @@ export default function ScanResults({
             return (
               <div
                 key={playlist.id}
-                className="rounded-2xl border border-white/10 bg-slate-900/60 p-5 text-sm text-slate-200/85"
+                className="rounded-2xl border border-white/10 bg-black/70 p-5 text-sm text-gray-200"
               >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-1">
-                    <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Playlist</p>
-                    <h3 className="text-lg font-semibold text-emerald-100">{playlist.name}</h3>
+                <div className="flex flex-wrap items-center justify-between gap-3 text-center md:text-left">
+                  <div className="space-y-1 w-full md:w-auto">
+                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Playlist</p>
+                    <h3 className="text-lg font-semibold text-white">{playlist.name}</h3>
                   </div>
-                  <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-300/80">
+                  <div className="flex w-full flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] text-gray-400 md:w-auto md:justify-end">
                     <span>{playlist.matches.length} match{playlist.matches.length === 1 ? "" : "es"}</span>
                     <span>
                       {playlist.totalTracks === undefined || playlist.totalTracks === null
@@ -103,14 +103,14 @@ export default function ScanResults({
                   {visibleMatches.map(match => (
                     <li
                       key={match.id ?? `${playlist.id}-${match.name}`}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-slate-950/50 px-4 py-3"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-center md:text-left"
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-emerald-100">{match.name}</p>
-                        <p className="truncate text-xs uppercase tracking-[0.3em] text-slate-400">
+                        <p className="truncate text-sm font-medium text-white">{match.name}</p>
+                        <p className="truncate text-xs uppercase tracking-[0.3em] text-gray-400">
                           {match.artists.join(", ")}
                         </p>
-                        <p className="truncate text-xs text-slate-400/80">
+                        <p className="truncate text-xs text-gray-400/80">
                           Matched artist{match.matchedArtists.length === 1 ? "" : "s"}:{" "}
                           {match.matchedArtists.join(", ")}
                         </p>
@@ -131,7 +131,7 @@ export default function ScanResults({
                   ))}
                 </ul>
                 {hiddenCount > 0 ? (
-                  <p className="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-2 text-xs text-slate-300/80">
+                  <p className="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-2 text-xs text-gray-300 text-center">
                     +{hiddenCount} more match{hiddenCount === 1 ? "" : "es"} not shown. Narrow your artist list or open the playlist to review everything.
                   </p>
                 ) : null}
@@ -140,7 +140,7 @@ export default function ScanResults({
           })}
         </div>
       ) : results ? (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-slate-300/80">
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-gray-300">
           No tracks matched the artists you provided. Try broadening the artist list or scanning additional playlists.
         </div>
       ) : null}

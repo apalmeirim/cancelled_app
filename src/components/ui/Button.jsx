@@ -2,15 +2,15 @@ import cn from "../../utils/cn";
 
 const variantClasses = {
   primary:
-    "bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 text-slate-950 shadow-[0_15px_35px_rgba(16,185,129,0.35)] hover:from-emerald-300 hover:via-emerald-400 hover:to-teal-300 focus-visible:outline-emerald-200",
+    "bg-white text-black border border-white/80 shadow-[0_12px_30px_rgba(255,255,255,0.15)] hover:bg-gray-200 focus-visible:outline-white",
   secondary:
-    "bg-white/10 text-emerald-100 border border-emerald-200/40 hover:bg-white/15 focus-visible:outline-emerald-200",
+    "bg-black text-white border border-white/60 hover:bg-gray-900 focus-visible:outline-white",
   outline:
-    "border border-emerald-400/60 text-emerald-200 hover:bg-emerald-400/10 focus-visible:outline-emerald-200",
+    "border border-white/60 text-white hover:bg-white/10 focus-visible:outline-white",
   ghost:
-    "text-emerald-200 hover:bg-white/10 focus-visible:outline-emerald-200",
+    "text-white hover:bg-white/10 focus-visible:outline-white",
   subtle:
-    "bg-slate-900/60 text-slate-100 border border-white/5 hover:bg-slate-900/75 focus-visible:outline-slate-200",
+    "bg-gray-900 text-gray-100 border border-white/10 hover:bg-gray-800 focus-visible:outline-white",
 };
 
 const sizeClasses = {

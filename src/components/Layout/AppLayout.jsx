@@ -7,11 +7,11 @@ export default function AppLayout() {
     <div className="app-shell">
       <div className="app-shell__background">
         <Squares
-          speed={0.5}
-          squareSize={40}
+          speed={0.4}
+          squareSize={44}
           direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.35)"
-          hoverFillColor="rgba(68, 51, 122, 0.35)"
+          borderColor="rgba(255, 255, 255, 0.15)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
           className="app-shell__canvas"
         />
         <div className="app-shell__overlay" />

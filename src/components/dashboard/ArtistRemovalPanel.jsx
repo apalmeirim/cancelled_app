@@ -30,26 +30,26 @@ export default function ArtistRemovalPanel({
   };
 
   return (
-    <section className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Step 2</p>
-        <h2 className="text-2xl font-semibold text-emerald-100">Search for artists to remove</h2>
-        <p className="text-sm text-slate-300/80">
+    <section className="space-y-6 text-center">
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Step 2</p>
+        <h2 className="text-2xl font-semibold text-white">Search for artists to remove</h2>
+        <p className="text-sm text-gray-300">
           Add artist names you want to exclude. We&apos;ll cross-reference tracks inside your selected playlists.
         </p>
       </div>
 
-      <Card padding="md" className="border-white/5 bg-slate-950/40">
+      <Card padding="md" className="border-white/5 bg-black/60">
         <div className="flex flex-col gap-4 md:flex-row md:items-end">
-          <label className="flex-1 space-y-2">
-            <span className="text-xs uppercase tracking-[0.35em] text-slate-400">Artist name</span>
+          <label className="flex-1 space-y-2 text-center">
+            <span className="text-xs uppercase tracking-[0.35em] text-gray-500">Artist name</span>
             <input
               type="text"
               placeholder="Ex: Taylor Swift"
               value={inputValue}
               onChange={event => setInputValue(event.target.value)}
               onKeyDown={handleKeyDown}
-              className="h-12 w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 text-base text-slate-100 outline-none transition focus:border-emerald-400/60 focus:outline-none"
+              className="h-12 w-full rounded-xl border border-white/15 bg-black/70 px-4 text-base text-gray-100 outline-none transition focus:border-white/70 focus:outline-none"
             />
           </label>
           <Button
@@ -64,36 +64,36 @@ export default function ArtistRemovalPanel({
         </div>
 
         <div className="mt-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Artists to remove</p>
-            <span className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">{artists.length} added</span>
+          <div className="flex flex-col items-center gap-1 text-xs uppercase tracking-[0.35em] text-gray-500">
+            <p>Artists to remove</p>
+            <span>{artists.length} added</span>
           </div>
           {artists.length ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {artists.map(artist => (
                 <button
                   key={artist}
                   type="button"
                   onClick={() => onRemoveArtist(artist)}
                   className={cn(
-                    "group inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.35em] text-emerald-100 transition",
-                    "hover:border-red-400/50 hover:bg-red-500/15 hover:text-red-200"
+                    "group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.35em] text-white transition",
+                    "hover:border-white/70 hover:bg-white/15"
                   )}
                 >
                   {artist}
-                  <span className="text-[0.65rem] font-bold group-hover:text-red-200">&times;</span>
+                  <span className="text-[0.65rem] font-bold text-white/60 group-hover:text-white">&times;</span>
                 </button>
               ))}
             </div>
           ) : (
-            <p className="rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-slate-400/80">
+            <p className="rounded-xl border border-dashed border-white/15 bg-white/5 px-4 py-6 text-center text-sm text-gray-400">
               Added artists will appear here. Click a tag to remove it from the list.
             </p>
           )}
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+        <div className="mt-6 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.35em] text-gray-500">
+          <p>
             {disabled
               ? "Select playlists to enable the scan"
               : isScanning
@@ -113,7 +113,7 @@ export default function ArtistRemovalPanel({
           </Button>
         </div>
         {scanError ? (
-          <p className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-xs text-red-200">
+          <p className="mt-4 rounded-xl border border-white/30 bg-black/60 px-4 py-3 text-xs text-white/80">
             {scanError}
           </p>
         ) : null}

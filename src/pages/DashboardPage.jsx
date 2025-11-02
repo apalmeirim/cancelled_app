@@ -8,12 +8,12 @@ import Button from "../components/ui/Button";
 import Card from "../components/ui/Card";
 
 const FALLBACK_COVER_GRADIENTS = [
-  "linear-gradient(135deg, rgba(16,205,230,0.55), rgba(129,140,248,0.45))",
-  "linear-gradient(135deg, rgba(236,72,153,0.55), rgba(34,211,238,0.45))",
-  "linear-gradient(135deg, rgba(79,70,229,0.5), rgba(236,72,153,0.4))",
-  "linear-gradient(135deg, rgba(45,212,191,0.55), rgba(250,204,21,0.4))",
-  "linear-gradient(135deg, rgba(129,140,248,0.5), rgba(253,186,116,0.35))",
-  "linear-gradient(135deg, rgba(74,222,128,0.5), rgba(14,165,233,0.35))",
+  "linear-gradient(135deg, rgba(255,255,255,0.25), rgba(0,0,0,0.85))",
+  "linear-gradient(135deg, rgba(245,245,245,0.35), rgba(10,10,10,0.7))",
+  "linear-gradient(135deg, rgba(220,220,220,0.3), rgba(15,15,15,0.85))",
+  "linear-gradient(135deg, rgba(200,200,200,0.3), rgba(5,5,5,0.85))",
+  "linear-gradient(135deg, rgba(240,240,240,0.25), rgba(0,0,0,0.75))",
+  "linear-gradient(135deg, rgba(210,210,210,0.3), rgba(12,12,12,0.8))",
 ];
 
 export default function DashboardPage({ token, onLogout, onLogin }) {
@@ -450,18 +450,18 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
 
   if (!token) {
     return (
-      <Card padding="lg" className="space-y-8 border-white/10 bg-slate-950/55 text-center">
+      <Card padding="lg" className="space-y-8 border-white/10 bg-black/70 text-center">
         <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Authentication required</p>
-          <h1 className="text-3xl font-semibold text-emerald-100">Connect Spotify to view your dashboard</h1>
-          <p className="text-sm text-slate-300/80">
+          <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Authentication required</p>
+          <h1 className="text-3xl font-semibold text-white">Connect Spotify to view your dashboard</h1>
+          <p className="text-sm text-gray-300">
             Once you approve access, we will pull in every playlist linked to your account so you can start removing
             artists instantly.
           </p>
         </div>
         <div className="flex flex-col items-center gap-4">
           <SpotifyConnectButton onClick={onLogin} label="Connect with Spotify" />
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400/70">
+          <p className="text-xs uppercase tracking-[0.35em] text-gray-500">
             Need an invite? Request it at cancelled.fm
           </p>
         </div>
@@ -470,16 +470,16 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
   }
 
   return (
-    <div className="space-y-14">
-      <header className="flex flex-wrap items-center justify-between gap-6">
+    <div className="space-y-14 text-center">
+      <header className="flex flex-col items-center gap-5">
         <div className="space-y-3">
-          <h1 className="text-3xl font-semibold text-emerald-100">d@shboard</h1>
-          <p className="max-w-2xl text-sm text-slate-300/80">
+          <h1 className="text-3xl font-semibold uppercase tracking-[0.4em] text-white">d@shboard</h1>
+          <p className="mx-auto max-w-2xl text-sm text-gray-300">
             select playlist(s) and remove any artist(s).
             for "Liked Songs", view tutorial.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-3 text-xs uppercase tracking-[0.35em] text-slate-400">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.35em] text-gray-500">
           <Button variant="ghost" size="sm" onClick={onLogout}>
             Log out
           </Button>
@@ -523,22 +523,20 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
         removeSummary={removeSummary}
       />
 
-      <Card padding="lg" className="border-white/10 bg-slate-950/45">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Sync summary</p>
-            <h2 className="text-xl font-semibold text-emerald-100">What happens next?</h2>
-            <p className="text-sm text-slate-300/80">
-              Cancelled runs safely on top of Spotify API endpoints. Once integrations are live, we will display a full
-              report of every track slated for removal, complete with undo history.
-            </p>
-          </div>
-          <ul className="space-y-3 text-sm text-slate-200/80">
-            <li>- Nothing is deleted until you explicitly approve the sync.</li>
-            <li>- We keep an audit log of every track for recovery.</li>
-            <li>- Collaboration support is on the roadmap for shared playlists.</li>
-          </ul>
+      <Card padding="lg" className="border-white/10 bg-black/60 space-y-6">
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Sync summary</p>
+          <h2 className="text-xl font-semibold text-white">What happens next?</h2>
+          <p className="text-sm text-gray-300">
+            Cancelled runs safely on top of Spotify API endpoints. Once integrations are live, we will display a full
+            report of every track slated for removal, complete with undo history.
+          </p>
         </div>
+        <ul className="space-y-3 text-sm text-gray-200">
+          <li>- Nothing is deleted until you explicitly approve the sync.</li>
+          <li>- We keep an audit log of every track for recovery.</li>
+          <li>- Collaboration support is on the roadmap for shared playlists.</li>
+        </ul>
       </Card>
 
       <TutorialModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />

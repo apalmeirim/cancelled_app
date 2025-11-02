@@ -5,7 +5,7 @@ import cn from "../../utils/cn";
 export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isBusy }) {
   const gradient =
     playlist.coverGradient ??
-    "linear-gradient(135deg, rgba(16,205,230,0.55), rgba(129,140,248,0.45))";
+    "linear-gradient(135deg, rgba(255,255,255,0.4), rgba(0,0,0,0.7))";
 
   const handleSelect = event => {
     event.stopPropagation();
@@ -35,7 +35,7 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
       padding="none"
       className={cn(
         "group relative h-40 overflow-hidden transition duration-200",
-        selected ? "border-emerald-400/70 shadow-[0_16px_40px_rgba(16,185,129,0.35)]" : "hover:border-emerald-400/50",
+        selected ? "border-white/80 shadow-[0_16px_36px_rgba(255,255,255,0.2)]" : "hover:border-white/40",
         isBusy ? "opacity-70" : ""
       )}
     >
@@ -49,21 +49,21 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
       ) : (
         <div className="absolute inset-0" style={{ background: gradient }} aria-hidden="true" />
       )}
-      <div className="absolute inset-0 bg-slate-900/50 mix-blend-multiply" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/50 mix-blend-multiply" aria-hidden="true" />
       <div
         className={cn(
           "absolute inset-0 flex items-end border-2 border-transparent text-white transition",
-          selected ? "border-emerald-300/60" : ""
+          selected ? "border-white/70" : ""
         )}
       >
-        <div className="w-full bg-slate-950/60 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/80">
+        <div className="w-full px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/90 drop-shadow">
           {trackCountLabel}
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-slate-950/80 px-6 text-center opacity-0 transition duration-200 group-hover:opacity-100">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/80 px-6 text-center opacity-0 transition duration-200 group-hover:opacity-100">
         <div className="pointer-events-auto space-y-3">
-          <h3 className="text-lg font-semibold leading-tight text-emerald-100">{playlist.name}</h3>
+          <h3 className="text-lg font-semibold leading-tight text-white">{playlist.name}</h3>
           <div className="flex flex-wrap justify-center gap-3">
             <Button
               variant={selected ? "secondary" : "primary"}

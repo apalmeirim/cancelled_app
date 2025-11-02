@@ -25,16 +25,16 @@ export default function PlaylistGrid({
   const handleOpen = onOpenPlaylist ?? (() => {});
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-emerald-200/70">Step 1</p>
-          <h2 className="text-2xl font-semibold text-emerald-100">Choose playlists to clean</h2>
-          <p className="text-sm text-slate-300/80">
+    <section className="space-y-6 text-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Step 1</p>
+          <h2 className="text-2xl font-semibold text-white">Choose playlists to clean</h2>
+          <p className="text-sm text-gray-300">
             Select one or multiple playlists. You can highlight all of them or reset with a single click.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Button variant="ghost" size="sm" onClick={onClearSelection} disabled={!canClear}>
             Clear
           </Button>
@@ -44,19 +44,19 @@ export default function PlaylistGrid({
         </div>
       </div>
 
-      <Card padding="md" className="border-white/5 bg-slate-950/40">
-        <div className="mb-4 flex items-center justify-between text-sm text-slate-300/80">
+      <Card padding="md" className="border-white/5 bg-black/60">
+        <div className="mb-6 flex flex-col items-center gap-2 text-sm text-gray-300">
           <span>
             {selectedCount ? `${selectedCount} playlist${selectedCount > 1 ? "s" : ""} selected` : "No playlist selected yet"}
           </span>
-          <span className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">Total {totalPlaylists}</span>
+          <span className="text-xs uppercase tracking-[0.35em] text-gray-500">Total {totalPlaylists}</span>
         </div>
         {isLoading ? (
-          <div className="flex min-h-[160px] items-center justify-center text-sm text-slate-300/80">
+          <div className="flex min-h-[160px] items-center justify-center text-sm text-gray-300">
             Loading your playlists...
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center gap-4 py-10 text-center text-sm text-slate-300/80">
+          <div className="flex flex-col items-center justify-center gap-4 py-10 text-center text-sm text-gray-300">
             <p>{error}</p>
             <Button variant="outline" size="sm" onClick={handleRetry}>
               Try again
@@ -76,7 +76,7 @@ export default function PlaylistGrid({
             ))}
           </div>
         ) : (
-          <div className="flex min-h-[160px] items-center justify-center text-sm text-slate-300/80">
+          <div className="flex min-h-[160px] items-center justify-center text-sm text-gray-300">
             No playlists found for this account.
           </div>
         )}

@@ -2,10 +2,8 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
-  color: #e6f8ff;
-  background: radial-gradient(circle at top left, rgba(61, 147, 219, 0.18), transparent 45%),
-    radial-gradient(circle at bottom right, rgba(140, 93, 222, 0.22), transparent 40%),
-    #03030f;
+  color: #f5f5f5;
+  background: #060606;
   font-family: "Google Sans Code", monospace;
 }
 
@@ -24,7 +22,7 @@
 .app-shell__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(32, 17, 51, 0.32), rgba(22, 13, 40, 0.26), rgba(14, 9, 32, 0.2));
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.55));
 }
 
 .app-shell__main {
@@ -52,7 +50,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(214, 248, 255, 0.4);
+  color: rgba(255, 255, 255, 0.35);
 }
 
 @media (max-width: 640px) {

@@ -13,10 +13,10 @@ export default function LoginPage({ token, onLogin }) {
   }, [token, navigate]);
 
   return (
-    <Card padding="lg" className="flex flex-col items-center gap-6 border-white/12 bg-slate-950/65 text-center">
+    <Card padding="lg" className="flex flex-col items-center gap-6 border-white/12 bg-black/70 text-center">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold text-emerald-100">Log in to continue</h1>
-        <p className="text-sm text-slate-300/80">
+        <h1 className="text-3xl font-semibold text-white">Log in to continue</h1>
+        <p className="text-sm text-gray-300">
           Authorise Spotify to continue to dashboard.
         </p>
       </div>

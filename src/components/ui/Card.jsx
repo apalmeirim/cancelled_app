@@ -11,7 +11,7 @@ export default function Card({ as: Component = "div", className, children, paddi
   return (
     <Component
       className={cn(
-        "rounded-2xl border border-white/10 bg-slate-950/50 shadow-[0_18px_45px_rgba(15,23,42,0.45)] backdrop-saturate-150",
+        "rounded-2xl border border-white/12 bg-black/75 shadow-[0_18px_45px_rgba(0,0,0,0.55)] backdrop-saturate-150",
         paddingMap[padding],
         className
       )}

@@ -15,17 +15,17 @@ const tutorialSteps = [
   {
     title: "Run the artist removal scan",
     description:
-      "Select the temporary playlist along with any others you want to clean, then add the artists you’d like to remove.",
+      "Select the temporary playlist along with any others you want to clean, then add the artists you'd like to remove.",
   },
   {
     title: "Review the generated removal list",
     description:
-      "We’ll list every match we can delete. You’ll get the option to approve each track before syncing back to Spotify.",
+      "We'll list every match we can delete. You'll get the option to approve each track before syncing back to Spotify.",
   },
   {
     title: "Resync or delete the temporary playlist",
     description:
-      "Once you’re done, either keep the curated playlist or sync it back into Liked Songs manually.",
+      "Once you're done, either keep the curated playlist or sync it back into Liked Songs manually.",
   },
 ];
 
@@ -43,16 +43,16 @@ export default function TutorialModal({ isOpen, onClose }) {
           <Card
             key={step.title}
             padding="md"
-            className="grid gap-4 border-white/10 bg-slate-950/55 md:grid-cols-[minmax(0,1fr)_250px]"
+            className="grid gap-4 border-white/10 bg-black/60 md:grid-cols-[minmax(0,1fr)_250px]"
           >
-            <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.35em] text-emerald-200/70">
+            <div className="space-y-2 text-center md:text-left">
+              <p className="text-xs uppercase tracking-[0.35em] text-gray-500">
                 Step {index + 1}
               </p>
-              <h3 className="text-lg font-semibold text-emerald-100">{step.title}</h3>
-              <p className="text-sm text-slate-200/80">{step.description}</p>
+              <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+              <p className="text-sm text-gray-300">{step.description}</p>
             </div>
-            <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-white/12 bg-slate-900/60 text-xs font-medium uppercase tracking-[0.35em] text-slate-400/80">
+            <div className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-white/12 bg-black/70 text-center text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
               Screenshot placeholder
             </div>
           </Card>
