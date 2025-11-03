@@ -42,10 +42,9 @@ export default function ArtistRemovalPanel({
       <Card padding="md" className="border-white/5 bg-black/60">
         <div className="flex flex-col gap-4 md:flex-row md:items-end">
           <label className="flex-1 space-y-2 text-center">
-            <span className="text-xs tracking-[0.35em] text-gray-500">artist name</span>
             <input
               type="text"
-              placeholder="ex: Taylor Swift"
+              placeholder="ex: Kanye West"
               value={inputValue}
               onChange={event => setInputValue(event.target.value)}
               onKeyDown={handleKeyDown}
@@ -59,13 +58,12 @@ export default function ArtistRemovalPanel({
             onClick={handleAdd}
             disabled={!inputValue.trim()}
           >
-            add artist
+            add
           </Button>
         </div>
 
         <div className="mt-6 space-y-3">
           <div className="flex flex-col items-center gap-1 text-xs tracking-[0.35em] text-gray-500">
-            <p>artists to remove</p>
             <span>{artists.length} added</span>
           </div>
           {artists.length ? (
@@ -109,7 +107,7 @@ export default function ArtistRemovalPanel({
             disabled={disabled || !artists.length || isScanning || isRemoving}
             className="px-6"
           >
-            {isScanning ? "scanning..." : isRemoving ? "removing..." : "scan selected playlists"}
+            {isScanning ? "scanning..." : isRemoving ? "removing..." : "scan"}
           </Button>
         </div>
         {scanError ? (

@@ -66,7 +66,7 @@ export default function ScanResults({
 
       {isScanning && !results ? (
         <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-gray-300">
-          Scanning in progress...
+          scanning in progress...
         </div>
       ) : playlistsWithMatches.length ? (
         <div className="space-y-6 text-center md:text-left">
@@ -132,7 +132,7 @@ export default function ScanResults({
                 </ul>
                 {hiddenCount > 0 ? (
                   <p className="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-2 text-xs text-gray-300 text-center">
-                    +{hiddenCount} more match{hiddenCount === 1 ? "" : "es"} not shown. Narrow your artist list or open the playlist to review everything.
+                    +{hiddenCount} more match{hiddenCount === 1 ? "" : "es"} not shown. narrow your artist list or open the playlist to review everything.
                   </p>
                 ) : null}
               </div>

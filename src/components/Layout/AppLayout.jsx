@@ -23,7 +23,6 @@ export default function AppLayout() {
         </div>
       </main>
 
-      <footer className="app-shell__footer">cancelled.fm</footer>
     </div>
   );
 }
