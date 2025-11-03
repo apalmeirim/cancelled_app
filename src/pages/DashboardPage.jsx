@@ -598,7 +598,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     <div className="space-y-14 text-center">
       <header className="flex flex-col items-center gap-5">
         <div className="space-y-3">
-          <h1 className="text-3xl font-semibold tracking-[0.4em] text-white">d@shboard</h1>
+          <h2 className="text-2xl font-semibold text-white">d@shboard</h2>
           <p className="mx-auto max-w-2xl text-sm text-gray-300">
             select playlist(s) and remove any artist(s).
             for "Liked Songs", view tutorial.
