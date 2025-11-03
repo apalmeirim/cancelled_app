@@ -12,13 +12,13 @@ export default function LandingPage() {
           className="mx-auto block"
           fontSize="clamp(3.5rem, 9vw, 6rem)"
           fontWeight={800}
-          color="#9fffc7"
+          color="#ffffffff"
           hoverIntensity={0.65}
         >
           c@ncelled
         </FuzzyText>
         <p className="mx-auto max-w-md text-sm text-slate-200/80">
-          Remove artists from your Spotify playlists in a couple of clicks.
+          remove cancelled artists from your Spotify playlists in a couple of clicks.
         </p>
       </div>
       <Button variant="primary" size="lg" className="px-10" onClick={() => navigate("/login")}>Login</Button>
