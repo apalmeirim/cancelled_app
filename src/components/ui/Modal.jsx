@@ -56,9 +56,9 @@ export default function Modal({ title, description, isOpen, onClose, children, c
             size="sm"
             aria-label="Close tutorial"
             onClick={onClose}
-            className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.25em]"
+            className="rounded-full px-3 py-1 text-xs tracking-[0.25em]"
           >
-            Close
+            close
           </Button>
         </div>
         <div className="mt-6 space-y-6">{children}</div>

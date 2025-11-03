@@ -3,7 +3,7 @@ import spotifyLogo from "../../assets/spotify_logo.png";
 
 export default function SpotifyConnectButton({
   onClick,
-  label = "Connect with Spotify",
+  label = "connect with Spotify",
   subLabel,
   icon,
   disabled,
@@ -29,7 +29,7 @@ export default function SpotifyConnectButton({
         {label}
       </Button>
       {subLabel ? (
-        <span className="text-xs font-medium uppercase tracking-[0.35em] text-gray-400">
+        <span className="text-xs font-medium tracking-[0.35em] text-gray-400">
           {subLabel}
         </span>
       ) : null}

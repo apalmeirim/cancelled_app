@@ -27,7 +27,7 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
 
   const trackCountLabel =
     playlist.tracks === undefined || playlist.tracks === null
-      ? "Tracks N/A"
+      ? "tracks n/a"
       : `${playlist.tracks} track${playlist.tracks === 1 ? "" : "s"}`;
 
   return (
@@ -56,7 +56,7 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
           selected ? "border-white/70" : ""
         )}
       >
-        <div className="w-full px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/90 drop-shadow">
+        <div className="w-full px-4 py-2 text-xs tracking-[0.3em] text-white/90 drop-shadow">
           {trackCountLabel}
         </div>
       </div>
@@ -71,7 +71,7 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
               onClick={handleSelect}
               disabled={isBusy}
             >
-              {selected ? "Selected" : "Select"}
+              {selected ? "selected" : "select"}
             </Button>
             {playlist.externalUrl ? (
               <Button
@@ -80,7 +80,7 @@ export default function PlaylistCard({ playlist, selected, onToggle, onOpen, isB
                 onClick={handleOpen}
                 disabled={isBusy}
               >
-                Open in Spotify
+                open in Spotify
               </Button>
             ) : null}
           </div>

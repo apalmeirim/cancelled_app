@@ -577,26 +577,22 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
     window.open(playlist.externalUrl, "_blank", "noopener,noreferrer");
   };
 
-  if (!token) {
-    return (
-      <Card padding="lg" className="space-y-8 border-white/10 bg-black/70 text-center">
-        <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Authentication required</p>
-          <h1 className="text-3xl font-semibold text-white">Connect Spotify to view your dashboard</h1>
-          <p className="text-sm text-gray-300">
-            Once you approve access, we will pull in every playlist linked to your account so you can start removing
-            artists instantly.
-          </p>
-        </div>
-        <div className="flex flex-col items-center gap-4">
-          <SpotifyConnectButton onClick={onLogin} label="Connect with Spotify" />
-          <p className="text-xs uppercase tracking-[0.35em] text-gray-500">
-            Need an invite? Request it at cancelled.fm
-          </p>
-        </div>
-      </Card>
-    );
-  }
+    if (!token) {
+      return (
+        <Card padding="lg" className="space-y-8 border-white/10 bg-black/70 text-center">
+          <div className="space-y-4">
+            <p className="text-xs tracking-[0.4em] text-gray-400">authentication required</p>
+            <h1 className="text-3xl font-semibold text-white">connect Spotify to view your dashboard</h1>
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <SpotifyConnectButton onClick={onLogin} label="connect with Spotify" />
+            <p className="text-xs tracking-[0.35em] text-gray-500">
+              go back to homepage to authorize Spotify.
+            </p>
+          </div>
+        </Card>
+      );
+    }
 
   return (
     <div className="space-y-14 text-center">
@@ -608,7 +604,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
             for "Liked Songs", view tutorial.
           </p>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.35em] text-gray-500">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs tracking-[0.35em] text-gray-500">
           <Button variant="outline" size="sm" onClick={() => setModalOpen(true)}>
             tutorial for "Liked Songs"
           </Button>
@@ -659,7 +655,7 @@ export default function DashboardPage({ token, onLogout, onLogin }) {
 
       <div className="flex justify-center">
         <Button variant="ghost" size="sm" onClick={onLogout}>
-          Log out
+          log out
         </Button>
       </div>
     </div>

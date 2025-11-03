@@ -18,17 +18,17 @@ export default function TutorialModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Tutorial: Cleaning your Liked Songs"
-      description="Spotify treats Liked Songs differently than playlists. Follow this guide to work around the limitation."
+      title='tutorial: cleaning your Liked Songs'
+      description="spotify treats Liked Songs differently than playlists. follow this guide to work around the limitation."
       className="w-full max-w-5xl"
     >
       <div className="grid gap-6 md:grid-cols-3">
         <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
           <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 1</p>
-            <h3 className="text-lg font-semibold text-white">Clone your liked songs automatically</h3>
+            <p className="text-xs tracking-[0.35em] text-gray-500">step 1</p>
+            <h3 className="text-lg font-semibold text-white">clone</h3>
             <p className="text-sm text-gray-300">
-              We&apos;ll create a playlist named <span className="font-semibold">&quot;ls copy&quot;</span> that
+              creates a playlist named <span className="font-semibold">&quot;ls copy&quot;</span> that
               mirrors every track in your Liked Songs.
             </p>
           </div>
@@ -47,18 +47,18 @@ export default function TutorialModal({
                 {creationStatus.message}
               </p>
             ) : null}
-            <p className="text-[0.7rem] uppercase tracking-[0.4em] text-gray-500">
-              Requires Spotify to authorise liked songs access
+            <p className="text-[0.7rem] tracking-[0.4em] text-gray-500">
+              requires Spotify to authorise Liked Songs access
             </p>
           </div>
         </Card>
 
         <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
           <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 2</p>
-            <h3 className="text-lg font-semibold text-white">Use Cancelled as usual</h3>
+            <p className="text-xs tracking-[0.35em] text-gray-500">step 2</p>
+            <h3 className="text-lg font-semibold text-white">run</h3>
             <p className="text-sm text-gray-300">
-              After the playlist is created, refresh your dashboard playlists and run scans exactly as you would for any
+              after the playlist is created, refresh your dashboard playlists and run scans exactly as you would for any
               other collection.
             </p>
           </div>
@@ -66,11 +66,10 @@ export default function TutorialModal({
 
         <Card padding="md" className="flex flex-col gap-4 border-white/10 bg-black/60 text-center">
           <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Step 3</p>
-            <h3 className="text-lg font-semibold text-white">Replace your Liked Songs</h3>
+            <p className="text-xs tracking-[0.35em] text-gray-500">step 3</p>
+            <h3 className="text-lg font-semibold text-white">replace</h3>
             <p className="text-sm text-gray-300">
-              Once you&apos;re happy with the results, clear your Liked Songs and add back the tracks from{" "}
-              <span className="font-semibold">&quot;ls copy&quot;</span> so the cleaned list becomes your new library.
+              remove all songs from your current Liked Songs library, and then copy and paste the new playlist into the empty library.
             </p>
           </div>
         </Card>

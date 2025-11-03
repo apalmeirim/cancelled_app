@@ -23,16 +23,16 @@ export default function ScanResults({
   return (
     <Card padding="lg" className="border-white/10 bg-black/60 space-y-6 text-center">
       <header className="space-y-2">
-        <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Scan summary</p>
-        <h2 className="text-xl font-semibold text-white">Review matched tracks</h2>
+        <p className="text-xs tracking-[0.35em] text-gray-500">scan summary</p>
+        <h2 className="text-xl font-semibold text-white">review matched tracks</h2>
         <p className="text-sm text-gray-300">
           {isScanning
-            ? "We're scanning your playlists. This can take a moment for large collections."
+            ? "we're scanning your playlists. this can take a moment for large collections."
             : results
             ? totalMatches
-              ? `Found ${totalMatches} track${totalMatches === 1 ? "" : "s"} across ${scannedCount} playlist${scannedCount === 1 ? "" : "s"}.`
-              : `No matches found across ${scannedCount} playlist${scannedCount === 1 ? "" : "s"}.`
-            : "Kick off a scan to see which tracks will be removed."}
+              ? `found ${totalMatches} track${totalMatches === 1 ? "" : "s"} across ${scannedCount} playlist${scannedCount === 1 ? "" : "s"}.`
+              : `no matches found across ${scannedCount} playlist${scannedCount === 1 ? "" : "s"}.`
+            : "kick off a scan to see which tracks will be removed."}
         </p>
       </header>
 
@@ -47,7 +47,7 @@ export default function ScanResults({
             onClick={onRemoveMatches}
             disabled={isScanning || isRemoving}
           >
-            {isRemoving ? "Removing..." : "Remove matched tracks"}
+            {isRemoving ? "removing..." : "remove matched tracks"}
           </Button>
         </div>
       ) : null}
@@ -81,19 +81,19 @@ export default function ScanResults({
               >
                 <div className="flex flex-wrap items-center justify-between gap-3 text-center md:text-left">
                   <div className="space-y-1 w-full md:w-auto">
-                    <p className="text-xs uppercase tracking-[0.35em] text-gray-500">Playlist</p>
+                    <p className="text-xs tracking-[0.35em] text-gray-500">playlist</p>
                     <h3 className="text-lg font-semibold text-white">{playlist.name}</h3>
                   </div>
-                  <div className="flex w-full flex-wrap items-center justify-center gap-3 text-xs uppercase tracking-[0.3em] text-gray-400 md:w-auto md:justify-end">
+                  <div className="flex w-full flex-wrap items-center justify-center gap-3 text-xs tracking-[0.3em] text-gray-400 md:w-auto md:justify-end">
                     <span>{playlist.matches.length} match{playlist.matches.length === 1 ? "" : "es"}</span>
                     <span>
                       {playlist.totalTracks === undefined || playlist.totalTracks === null
-                        ? "Total N/A"
+                        ? "total N/A"
                         : `${playlist.totalTracks} total`}
                     </span>
                     {playlist.externalUrl ? (
                       <Button as="a" href={playlist.externalUrl} target="_blank" rel="noreferrer" variant="outline" size="sm">
-                        Open playlist
+                        open playlist
                       </Button>
                     ) : null}
                   </div>
@@ -107,11 +107,11 @@ export default function ScanResults({
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-white">{match.name}</p>
-                        <p className="truncate text-xs uppercase tracking-[0.3em] text-gray-400">
+                        <p className="truncate text-xs tracking-[0.3em] text-gray-400">
                           {match.artists.join(", ")}
                         </p>
                         <p className="truncate text-xs text-gray-400/80">
-                          Matched artist{match.matchedArtists.length === 1 ? "" : "s"}:{" "}
+                          matched artist{match.matchedArtists.length === 1 ? "" : "s"}:{" "}
                           {match.matchedArtists.join(", ")}
                         </p>
                       </div>
@@ -124,7 +124,7 @@ export default function ScanResults({
                           variant="ghost"
                           size="sm"
                         >
-                          View track
+                          view track
                         </Button>
                       ) : null}
                     </li>
@@ -141,7 +141,7 @@ export default function ScanResults({
         </div>
       ) : results ? (
         <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-12 text-sm text-gray-300">
-          No tracks matched the artists you provided. Try broadening the artist list or scanning additional playlists.
+          no tracks matched the artists you provided. try broadening the artist list or scanning additional playlists.
         </div>
       ) : null}
     </Card>

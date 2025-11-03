@@ -32,20 +32,20 @@ export default function ArtistRemovalPanel({
   return (
     <section className="space-y-6 text-center">
       <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Step 2</p>
-        <h2 className="text-2xl font-semibold text-white">Search for artists to remove</h2>
+        <p className="text-xs tracking-[0.4em] text-gray-500">step 2</p>
+        <h2 className="text-2xl font-semibold text-white">search for artists to remove</h2>
         <p className="text-sm text-gray-300">
-          Add artist names you want to exclude. We&apos;ll cross-reference tracks inside your selected playlists.
+          add the names of the artists you wish to remove. make sure the artist is spelled correctly.
         </p>
       </div>
 
       <Card padding="md" className="border-white/5 bg-black/60">
         <div className="flex flex-col gap-4 md:flex-row md:items-end">
           <label className="flex-1 space-y-2 text-center">
-            <span className="text-xs uppercase tracking-[0.35em] text-gray-500">Artist name</span>
+            <span className="text-xs tracking-[0.35em] text-gray-500">artist name</span>
             <input
               type="text"
-              placeholder="Ex: Taylor Swift"
+              placeholder="ex: Taylor Swift"
               value={inputValue}
               onChange={event => setInputValue(event.target.value)}
               onKeyDown={handleKeyDown}
@@ -59,13 +59,13 @@ export default function ArtistRemovalPanel({
             onClick={handleAdd}
             disabled={!inputValue.trim()}
           >
-            Add artist
+            add artist
           </Button>
         </div>
 
         <div className="mt-6 space-y-3">
-          <div className="flex flex-col items-center gap-1 text-xs uppercase tracking-[0.35em] text-gray-500">
-            <p>Artists to remove</p>
+          <div className="flex flex-col items-center gap-1 text-xs tracking-[0.35em] text-gray-500">
+            <p>artists to remove</p>
             <span>{artists.length} added</span>
           </div>
           {artists.length ? (
@@ -76,7 +76,7 @@ export default function ArtistRemovalPanel({
                   type="button"
                   onClick={() => onRemoveArtist(artist)}
                   className={cn(
-                    "group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.35em] text-white transition",
+                    "group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-3 py-1.5 text-xs font-semibold tracking-[0.35em] text-white transition",
                     "hover:border-white/70 hover:bg-white/15"
                   )}
                 >
@@ -87,20 +87,20 @@ export default function ArtistRemovalPanel({
             </div>
           ) : (
             <p className="rounded-xl border border-dashed border-white/15 bg-white/5 px-4 py-6 text-center text-sm text-gray-400">
-              Added artists will appear here. Click a tag to remove it from the list.
+              added artists will appear here. click a tag to remove it from the list.
             </p>
           )}
         </div>
 
-        <div className="mt-6 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.35em] text-gray-500">
+        <div className="mt-6 flex flex-col items-center gap-3 text-xs tracking-[0.35em] text-gray-500">
           <p>
             {disabled
-              ? "Select playlists to enable the scan"
+              ? "select playlists to enable the scan"
               : isScanning
-              ? "Scanning in progress..."
+              ? "scanning in progress..."
               : isRemoving
-              ? "Removing matched tracks..."
-              : "You are ready to queue a cleanup scan"}
+              ? "removing matched tracks..."
+              : "you are ready to queue a cleanup scan"}
           </p>
           <Button
             variant="primary"
@@ -109,7 +109,7 @@ export default function ArtistRemovalPanel({
             disabled={disabled || !artists.length || isScanning || isRemoving}
             className="px-6"
           >
-            {isScanning ? "Scanning..." : isRemoving ? "Removing..." : "Scan selected playlists"}
+            {isScanning ? "scanning..." : isRemoving ? "removing..." : "scan selected playlists"}
           </Button>
         </div>
         {scanError ? (
