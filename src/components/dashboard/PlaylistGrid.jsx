@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import PlaylistCard from "./PlaylistCard";
@@ -12,17 +13,19 @@ export default function PlaylistGrid({
   isScanning,
   isRemoving,
   error,
-  onRetry,
   onOpenPlaylist,
 }) {
+  const navigate = useNavigate();
   const selectedCount = selectedIds.length;
   const totalPlaylists = playlists.length;
   const hasPlaylists = totalPlaylists > 0;
   const isBusy = isLoading || isScanning || isRemoving;
   const canSelectAll = hasPlaylists && selectedCount !== totalPlaylists && !isBusy && !error;
   const canClear = !!selectedCount && !isBusy;
-  const handleRetry = onRetry ?? (() => {});
   const handleOpen = onOpenPlaylist ?? (() => {});
+  const handleConnectToSpotify = () => {
+    navigate("/login");
+  };
 
   return (
     <section className="space-y-6 text-center">
@@ -56,8 +59,8 @@ export default function PlaylistGrid({
         ) : error ? (
           <div className="flex flex-col items-center justify-center gap-4 py-10 text-center text-sm text-gray-300">
             <p>{error}</p>
-            <Button variant="outline" size="sm" onClick={handleRetry}>
-              try again
+            <Button variant="outline" size="sm" onClick={handleConnectToSpotify}>
+              connect to Spotify
             </Button>
           </div>
         ) : hasPlaylists ? (
